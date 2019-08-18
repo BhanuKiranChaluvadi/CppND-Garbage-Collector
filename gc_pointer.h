@@ -112,8 +112,9 @@ Pointer<T,size>::Pointer(T *t){
 }
 // Copy constructor.
 template< class T, int size>
-Pointer<T,size>::Pointer(const Pointer &ob){
-
+Pointer<T,size>::Pointer(const Pointer &obj){
+    typename std::list<PtrDetails<T> >::iterator p;
+    p = findPtrInfo(obj.addr);
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
 
@@ -149,7 +150,7 @@ T *Pointer<T, size>::operator=(T *t){
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
 Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
-
+    typename std::list<PtrDetails<T> >::iterator p;
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
 
