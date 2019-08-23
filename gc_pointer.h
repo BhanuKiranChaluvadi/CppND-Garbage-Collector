@@ -108,19 +108,16 @@ Pointer<T,size>::Pointer(T *t){
 
     std::cout << "Entered thee constructor"<<  std::endl;
     // Register shutdown() as an exit function.
-    if (first)
+    if (this->first)
         atexit(shutdown);
-    first = false;
-
-    // TODO: Implement Pointer constructor
-    // Lab: Smart Pointer Project Lab
-
-
-    // Fill in the current details 
+    this->first = false;
     this->addr = t;
+    this->arraySize = size;
+    if(size  > 0)
+        this->isArray = true;
 
-    // push it in the refContainer
-
+    // TODO: push it in the refContainer
+    
 
 }
 // Copy constructor.
@@ -132,13 +129,13 @@ Pointer<T,size>::Pointer(const Pointer &obj){
     // Lab: Smart Pointer Project Lab
     // Sanity check
     if(this != obj) {
-        this->addr = obj.addr;
-        this->isArray = obj.isArray;
-        this->arraySize = obj.addr;
         // Register shutdown() as an exit function.
         if (this->first)
             atexit(shutdown);
         this->first = false;
+        this->addr = obj.addr;
+        this->arraySize = obj.addr;
+        this->isArray = obj.isArray;
     }
 
     // Increment refcount
