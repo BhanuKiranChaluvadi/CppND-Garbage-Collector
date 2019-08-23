@@ -4,6 +4,10 @@
 #include <cstdlib>
 #include "gc_details.h"
 #include "gc_iterator.h"
+
+using std::cout;
+using std::endl;
+
 /*
     Pointer implements a pointer type that uses
     garbage collection to release unused memory.
@@ -101,6 +105,8 @@ bool Pointer<T, size>::first = true;
 // Constructor for both initialized and uninitialized objects. -> see class interface
 template<class T,int size>
 Pointer<T,size>::Pointer(T *t){
+
+    std::cout << "Entered thee constructor"<<  std::endl;
     // Register shutdown() as an exit function.
     if (first)
         atexit(shutdown);
@@ -108,6 +114,13 @@ Pointer<T,size>::Pointer(T *t){
 
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
+
+
+    // Fill in the current details 
+    this->addr = t;
+
+    // push it in the refContainer
+
 
 }
 // Copy constructor.
@@ -117,7 +130,19 @@ Pointer<T,size>::Pointer(const Pointer &obj){
     p = findPtrInfo(obj.addr);
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
+    // Sanity check
+    if(this != obj) {
+        this->addr = obj.addr;
+        this->isArray = obj.isArray;
+        this->arraySize = obj.addr;
+        // Register shutdown() as an exit function.
+        if (this->first)
+            atexit(shutdown);
+        this->first = false;
+    }
 
+    // Increment refcount
+    p->refcount += 1;
 }
 
 // Destructor for Pointer.
