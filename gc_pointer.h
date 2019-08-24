@@ -117,24 +117,25 @@ Pointer<T,size>::Pointer(T *t){
         this->isArray = true;
 
     // TODO: push it in the refContainer
-    
+
 
 }
 // Copy constructor.
 template< class T, int size>
 Pointer<T,size>::Pointer(const Pointer &obj){
+    cout << "Entered copy constructor !! "<< endl;
     typename std::list<PtrDetails<T> >::iterator p;
     p = findPtrInfo(obj.addr);
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
     // Sanity check
-    if(this != obj) {
+    if(this != &obj) {
         // Register shutdown() as an exit function.
         if (this->first)
             atexit(shutdown);
         this->first = false;
         this->addr = obj.addr;
-        this->arraySize = obj.addr;
+        this->arraySize = obj.arraySize;
         this->isArray = obj.isArray;
     }
 
@@ -145,9 +146,16 @@ Pointer<T,size>::Pointer(const Pointer &obj){
 // Destructor for Pointer.
 template <class T, int size>
 Pointer<T, size>::~Pointer(){
+
     
     // TODO: Implement Pointer destructor
     // Lab: New and Delete Project Lab
+    typename std::list<PtrDetails<T> >::iterator p;
+    p = findPtrInfo(this->addr);
+    // decrement refCount
+    p->refcount -= 1;
+    
+
 }
 
 // Collect garbage. Returns true if at least
