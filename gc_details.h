@@ -21,7 +21,24 @@ array, then arraySize contains its size */
     PtrDetails(void)
     {
         // TODO: Implement PtrDetails
+        this->memPtr = nullptr;
+        this->refcount = 0;
+        this->isArray = false;
+        this->arraySize = 0;
     }
+    PtrDetails(T* addr, unsigned arraySize)
+    {   
+        if(addr != nullptr) {
+            this->memPtr = addr;
+            this->refcount = 1;
+            this->arraySize = arraySize;
+            if(arraySize)
+                this->isArray = true;
+        }
+        else
+            PtrDetails();
+    }
+
 };
 // Overloading operator== allows two class objects to be compared.
 // This is needed by the STL list class.

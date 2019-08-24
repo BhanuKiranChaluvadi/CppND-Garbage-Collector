@@ -54,7 +54,7 @@ public:
     // one object was freed.
     static bool collect();
     // Overload assignment of pointer to Pointer.
-    T *operator=(T *t);
+    Pointer<T, size> *operator=(T *t);
     // Overload assignment of Pointer to Pointer.
     Pointer &operator=(Pointer &rv);
     // Return a reference to the object pointed
@@ -106,7 +106,6 @@ bool Pointer<T, size>::first = true;
 template<class T,int size>
 Pointer<T,size>::Pointer(T *t){
 
-    std::cout << "Entered thee constructor"<<  std::endl;
     // Register shutdown() as an exit function.
     if (this->first)
         atexit(shutdown);
@@ -117,27 +116,24 @@ Pointer<T,size>::Pointer(T *t){
         this->isArray = true;
 
     // TODO: push it in the refContainer
-
-
+    refContainer.emplace_back(t, size);
 }
 // Copy constructor.
 template< class T, int size>
 Pointer<T,size>::Pointer(const Pointer &obj){
-    cout << "Entered copy constructor !! "<< endl;
+
     typename std::list<PtrDetails<T> >::iterator p;
     p = findPtrInfo(obj.addr);
     // TODO: Implement Pointer constructor
     // Lab: Smart Pointer Project Lab
-    // Sanity check
-    if(this != &obj) {
-        // Register shutdown() as an exit function.
-        if (this->first)
-            atexit(shutdown);
-        this->first = false;
-        this->addr = obj.addr;
-        this->arraySize = obj.arraySize;
-        this->isArray = obj.isArray;
-    }
+
+    // Register shutdown() as an exit function.
+    if (this->first)
+        atexit(shutdown);
+    this->first = false;
+    this->addr = obj.addr;
+    this->arraySize = obj.arraySize;
+    this->isArray = obj.isArray;
 
     // Increment refcount
     p->refcount += 1;
@@ -147,7 +143,6 @@ Pointer<T,size>::Pointer(const Pointer &obj){
 template <class T, int size>
 Pointer<T, size>::~Pointer(){
 
-    
     // TODO: Implement Pointer destructor
     // Lab: New and Delete Project Lab
     typename std::list<PtrDetails<T> >::iterator p;
@@ -201,11 +196,18 @@ bool Pointer<T, size>::collect(){
 
 // Overload assignment of pointer to Pointer.
 template <class T, int size>
-T *Pointer<T, size>::operator=(T *t){
+Pointer<T, size> *Pointer<T, size>::operator=(T *t){
 
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
-
+    // sanitiy check
+    if(this->addr != t){
+        // assign variables
+        this->addr = t;
+        // new element pucsh into list
+        this->refContainer.emplace_back(t, this->arraySize);
+    }
+    return this;
 }
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
@@ -213,7 +215,19 @@ Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
     typename std::list<PtrDetails<T> >::iterator p;
     // TODO: Implement operator==
     // LAB: Smart Pointer Project Lab
+    // sanity check
+    if(this->addr != rv.addr) {
+        // assign varibles
+        this->addr = rv.addr;
+        this->arraySize = rv.arraySize;
+        this->isArray = rv.isArray;
 
+        // increment the counter
+        typename std::list<PtrDetails<T> >::iterator p;
+        p = findPtrInfo(rv.addr);
+        p->refcount += 1;
+    }
+    return *this;
 }
 
 // A utility function that displays refContainer.
