@@ -152,10 +152,16 @@ Pointer<T, size>::~Pointer(){
     // Lab: New and Delete Project Lab
     typename std::list<PtrDetails<T> >::iterator p;
     p = findPtrInfo(this->addr);
-    // decrement refCount
-    p->refcount -= 1;
-    
 
+    // TODO: Finalize Pointer destructor
+    // decrement ref count
+    p->refcount -= 1;
+    // Collect garbage when a pointer goes out of scope.
+    this->collect();
+    // For real use, you might want to collect unused memory less frequently,
+    // such as after refContainer has reached a certain size, after a certain number of Pointers have gone out of scope,
+    // or when memory is low.
+    
 }
 
 // Collect garbage. Returns true if at least
@@ -166,7 +172,31 @@ bool Pointer<T, size>::collect(){
     // TODO: Implement collect function
     // LAB: New and Delete Project Lab
     // Note: collect() will be called in the destructor
-    return false;
+    bool memfreed = false;
+    typename std::list<PtrDetails<T> >::iterator p;
+    do {
+        // Scan refContainer looking for unreferenced pointers.
+        for (p = refContainer.begin(); p != refContainer.end(); p++) {
+            // If in-use, skip.
+            if(p->refcount)
+                continue;
+            // Remove unused entry from refContainer.
+ 
+            // Free memory unless the Pointer is null.
+            if (p->memPtr != nullptr) {
+                if(p->isArray)
+                    delete [] p->memPtr;
+                else
+                    delete p->memPtr;
+            }
+            // Remove unused entry from refContainer.
+            refContainer.erase(p++);
+            // Restart the search.
+            break;
+        }
+
+    } while (p != refContainer.end());
+    return memfreed;
 }
 
 // Overload assignment of pointer to Pointer.
